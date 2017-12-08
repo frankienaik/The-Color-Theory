@@ -1,0 +1,205 @@
+//! **************************************************************************
+// Written by: Map P.20131013 on Fri Dec 08 08:42:55 2017
+//! **************************************************************************
+
+SCHEMATIC START;
+CONFIG VCCAUX = "3.3";
+COMP "binLED[0]" LOCATE = SITE "P140" LEVEL 1;
+COMP "cinLED[0]" LOCATE = SITE "P138" LEVEL 1;
+COMP "clk" LOCATE = SITE "P56" LEVEL 1;
+COMP "cIndicator[0]" LOCATE = SITE "P84" LEVEL 1;
+COMP "led_sel_goal[0]" LOCATE = SITE "P101" LEVEL 1;
+COMP "led_sel_goal[1]" LOCATE = SITE "P102" LEVEL 1;
+COMP "led_sel_goal[2]" LOCATE = SITE "P100" LEVEL 1;
+COMP "led_sel_goal[3]" LOCATE = SITE "P121" LEVEL 1;
+COMP "moutLED[0]" LOCATE = SITE "P80" LEVEL 1;
+COMP "io_button(0)" LOCATE = SITE "P137" LEVEL 1;
+COMP "io_button(2)" LOCATE = SITE "P139" LEVEL 1;
+COMP "timeLED[0]" LOCATE = SITE "P58" LEVEL 1;
+COMP "timeLED[1]" LOCATE = SITE "P67" LEVEL 1;
+COMP "timeLED[2]" LOCATE = SITE "P75" LEVEL 1;
+COMP "timeLED[3]" LOCATE = SITE "P79" LEVEL 1;
+COMP "timeLED[4]" LOCATE = SITE "P81" LEVEL 1;
+COMP "ginLED[0]" LOCATE = SITE "P142" LEVEL 1;
+COMP "clearButt" LOCATE = SITE "P30" LEVEL 1;
+COMP "bButt" LOCATE = SITE "P35" LEVEL 1;
+COMP "cButt" LOCATE = SITE "P17" LEVEL 1;
+COMP "gButt" LOCATE = SITE "P41" LEVEL 1;
+COMP "rButt" LOCATE = SITE "P51" LEVEL 1;
+COMP "entButt" LOCATE = SITE "P27" LEVEL 1;
+COMP "io_dip[2]" LOCATE = SITE "P118" LEVEL 1;
+COMP "io_dip[3]" LOCATE = SITE "P119" LEVEL 1;
+COMP "io_dip[4]" LOCATE = SITE "P116" LEVEL 1;
+COMP "rst_n" LOCATE = SITE "P38" LEVEL 1;
+COMP "io_led[0]" LOCATE = SITE "P97" LEVEL 1;
+COMP "io_led[1]" LOCATE = SITE "P98" LEVEL 1;
+COMP "io_led[2]" LOCATE = SITE "P94" LEVEL 1;
+COMP "io_led[3]" LOCATE = SITE "P95" LEVEL 1;
+COMP "io_led[4]" LOCATE = SITE "P92" LEVEL 1;
+COMP "routLED[0]" LOCATE = SITE "P57" LEVEL 1;
+COMP "idleLED[0]" LOCATE = SITE "P87" LEVEL 1;
+COMP "rinLED[0]" LOCATE = SITE "P144" LEVEL 1;
+COMP "backButt" LOCATE = SITE "P33" LEVEL 1;
+COMP "boutLED[0]" LOCATE = SITE "P74" LEVEL 1;
+COMP "coutLED[0]" LOCATE = SITE "P82" LEVEL 1;
+COMP "gmButt" LOCATE = SITE "P22" LEVEL 1;
+COMP "led[0]" LOCATE = SITE "P134" LEVEL 1;
+COMP "led[1]" LOCATE = SITE "P133" LEVEL 1;
+COMP "led[2]" LOCATE = SITE "P132" LEVEL 1;
+COMP "led[3]" LOCATE = SITE "P131" LEVEL 1;
+COMP "led[4]" LOCATE = SITE "P127" LEVEL 1;
+COMP "led[5]" LOCATE = SITE "P126" LEVEL 1;
+COMP "led[6]" LOCATE = SITE "P124" LEVEL 1;
+COMP "led[7]" LOCATE = SITE "P123" LEVEL 1;
+COMP "fsButt" LOCATE = SITE "P24" LEVEL 1;
+COMP "io_dip[15]" LOCATE = SITE "P99" LEVEL 1;
+COMP "io_led[11]" LOCATE = SITE "P83" LEVEL 1;
+COMP "io_led[21]" LOCATE = SITE "P23" LEVEL 1;
+COMP "io_led[14]" LOCATE = SITE "P11" LEVEL 1;
+COMP "io_led[23]" LOCATE = SITE "P26" LEVEL 1;
+COMP "io_led[15]" LOCATE = SITE "P14" LEVEL 1;
+COMP "io_led[16]" LOCATE = SITE "P15" LEVEL 1;
+COMP "io_led[17]" LOCATE = SITE "P16" LEVEL 1;
+COMP "io_led[19]" LOCATE = SITE "P21" LEVEL 1;
+COMP "youtLED[0]" LOCATE = SITE "P78" LEVEL 1;
+COMP "goutLED[0]" LOCATE = SITE "P66" LEVEL 1;
+COMP "livesLED[0]" LOCATE = SITE "P85" LEVEL 1;
+COMP "livesLED[1]" LOCATE = SITE "P88" LEVEL 1;
+COMP "livesLED[2]" LOCATE = SITE "P93" LEVEL 1;
+COMP "led_seg_goal[0]" LOCATE = SITE "P105" LEVEL 1;
+COMP "led_seg_goal[1]" LOCATE = SITE "P104" LEVEL 1;
+COMP "led_seg_goal[2]" LOCATE = SITE "P112" LEVEL 1;
+COMP "led_seg_goal[3]" LOCATE = SITE "P111" LEVEL 1;
+COMP "led_seg_goal[4]" LOCATE = SITE "P115" LEVEL 1;
+COMP "led_seg_goal[5]" LOCATE = SITE "P114" LEVEL 1;
+COMP "led_seg_goal[6]" LOCATE = SITE "P117" LEVEL 1;
+COMP "led_seg_goal[7]" LOCATE = SITE "P120" LEVEL 1;
+TIMEGRP clk = BEL "entButt_Cond/M_ctr_q_0" BEL "entButt_Cond/M_ctr_q_1" BEL
+        "entButt_Cond/M_ctr_q_2" BEL "entButt_Cond/M_ctr_q_3" BEL
+        "entButt_Cond/M_ctr_q_4" BEL "entButt_Cond/M_ctr_q_5" BEL
+        "entButt_Cond/M_ctr_q_6" BEL "entButt_Cond/M_ctr_q_7" BEL
+        "entButt_Cond/M_ctr_q_8" BEL "entButt_Cond/M_ctr_q_9" BEL
+        "entButt_Cond/M_ctr_q_10" BEL "entButt_Cond/M_ctr_q_11" BEL
+        "entButt_Cond/M_ctr_q_12" BEL "entButt_Cond/M_ctr_q_13" BEL
+        "entButt_Cond/M_ctr_q_14" BEL "entButt_Cond/M_ctr_q_15" BEL
+        "entButt_Cond/M_ctr_q_16" BEL "entButt_Cond/M_ctr_q_17" BEL
+        "entButt_Cond/M_ctr_q_18" BEL "entButt_Cond/M_ctr_q_19" BEL
+        "entButt_Cond/sync/M_pipe_q_1" BEL
+        "entButt_Cond/sync/Mshreg_M_pipe_q_1" BEL "gButt_Cond/M_ctr_q_0" BEL
+        "gButt_Cond/M_ctr_q_1" BEL "gButt_Cond/M_ctr_q_2" BEL
+        "gButt_Cond/M_ctr_q_3" BEL "gButt_Cond/M_ctr_q_4" BEL
+        "gButt_Cond/M_ctr_q_5" BEL "gButt_Cond/M_ctr_q_6" BEL
+        "gButt_Cond/M_ctr_q_7" BEL "gButt_Cond/M_ctr_q_8" BEL
+        "gButt_Cond/M_ctr_q_9" BEL "gButt_Cond/M_ctr_q_10" BEL
+        "gButt_Cond/M_ctr_q_11" BEL "gButt_Cond/M_ctr_q_12" BEL
+        "gButt_Cond/M_ctr_q_13" BEL "gButt_Cond/M_ctr_q_14" BEL
+        "gButt_Cond/M_ctr_q_15" BEL "gButt_Cond/M_ctr_q_16" BEL
+        "gButt_Cond/M_ctr_q_17" BEL "gButt_Cond/M_ctr_q_18" BEL
+        "gButt_Cond/M_ctr_q_19" BEL "gButt_Cond/sync/M_pipe_q_1" BEL
+        "gButt_Cond/sync/Mshreg_M_pipe_q_1" BEL "M_gIn_q_0" BEL "M_gIn_q_1"
+        BEL "M_gIn_q_2" BEL "bButt_Cond/M_ctr_q_0" BEL "bButt_Cond/M_ctr_q_1"
+        BEL "bButt_Cond/M_ctr_q_2" BEL "bButt_Cond/M_ctr_q_3" BEL
+        "bButt_Cond/M_ctr_q_4" BEL "bButt_Cond/M_ctr_q_5" BEL
+        "bButt_Cond/M_ctr_q_6" BEL "bButt_Cond/M_ctr_q_7" BEL
+        "bButt_Cond/M_ctr_q_8" BEL "bButt_Cond/M_ctr_q_9" BEL
+        "bButt_Cond/M_ctr_q_10" BEL "bButt_Cond/M_ctr_q_11" BEL
+        "bButt_Cond/M_ctr_q_12" BEL "bButt_Cond/M_ctr_q_13" BEL
+        "bButt_Cond/M_ctr_q_14" BEL "bButt_Cond/M_ctr_q_15" BEL
+        "bButt_Cond/M_ctr_q_16" BEL "bButt_Cond/M_ctr_q_17" BEL
+        "bButt_Cond/M_ctr_q_18" BEL "bButt_Cond/M_ctr_q_19" BEL
+        "bButt_Cond/sync/M_pipe_q_1" BEL "bButt_Cond/sync/Mshreg_M_pipe_q_1"
+        BEL "M_state_id_q_0" BEL "M_state_id_q_1" BEL "M_state_id_q_2" BEL
+        "M_state_id_q_3" BEL "cedge/M_last_q" BEL "M_startTimer_q_0" BEL
+        "M_startTimer_q_1" BEL "M_startTimer_q_2" BEL "M_startTimer_q_3" BEL
+        "M_startTimer_q_4" BEL "reset_cond/M_stage_q_3" BEL
+        "reset_cond/M_stage_q_2" BEL "reset_cond/M_stage_q_1" BEL
+        "reset_cond/M_stage_q_0" BEL "redge/M_last_q" BEL "M_timer_q_0" BEL
+        "M_timer_q_1" BEL "M_timer_q_2" BEL "M_timer_q_3" BEL "M_timer_q_4"
+        BEL "M_yOut_q_0" BEL "M_uC_q_0" BEL "M_idleOut_q_0" BEL
+        "M_timerScore_q_0" BEL "M_timerScore_q_1" BEL "M_timerScore_q_2" BEL
+        "M_timerScore_q_3" BEL "M_timerScore_q_4" BEL "M_timerScore_q_5" BEL
+        "M_timerScore_q_6" BEL "M_timerScore_q_7" BEL "M_cOut_q_0" BEL
+        "M_clock_q_10" BEL "M_clock_q_11" BEL "M_clock_q_12" BEL
+        "M_clock_q_13" BEL "M_uR_q_0" BEL "M_clock_q_14" BEL "M_clock_q_15"
+        BEL "M_clock_q_20" BEL "M_clock_q_16" BEL "M_clock_q_21" BEL
+        "M_clock_q_17" BEL "M_clock_q_22" BEL "M_clock_q_18" BEL
+        "M_clock_q_23" BEL "M_clock_q_19" BEL "M_clock_q_24" BEL
+        "M_clock_q_25" BEL "M_clock_q_26" BEL "M_clock_q_27" BEL
+        "M_clock_q_28" BEL "M_clock_q_29" BEL "M_lives_q_0" BEL "M_lives_q_1"
+        BEL "M_lives_q_2" BEL "M_score_q_0" BEL "M_score_q_1" BEL
+        "M_score_q_2" BEL "M_score_q_3" BEL "M_score_q_4" BEL "M_score_q_5"
+        BEL "M_score_q_6" BEL "M_score_q_7" BEL "seg/ctr/M_ctr_q_1" BEL
+        "seg/ctr/M_ctr_q_0" BEL "seg/ctr/M_ctr_q_2" BEL "seg/ctr/M_ctr_q_3"
+        BEL "seg/ctr/M_ctr_q_6" BEL "seg/ctr/M_ctr_q_4" BEL
+        "seg/ctr/M_ctr_q_5" BEL "seg/ctr/M_ctr_q_7" BEL "seg/ctr/M_ctr_q_8"
+        BEL "seg/ctr/M_ctr_q_11" BEL "seg/ctr/M_ctr_q_9" BEL
+        "seg/ctr/M_ctr_q_10" BEL "seg/ctr/M_ctr_q_12" BEL "seg/ctr/M_ctr_q_13"
+        BEL "seg/ctr/M_ctr_q_14" BEL "seg/ctr/M_ctr_q_15" BEL
+        "seg/ctr/M_ctr_q_17" BEL "seg/ctr/M_ctr_q_16" BEL "clk_BUFGP/BUFG" BEL
+        "M_cInOut_q_0" BEL "M_state_q_FSM_FFd20_1" BEL "M_state_q_FSM_FFd20_2"
+        BEL "backButt_Cond/M_ctr_q_0" BEL "backButt_Cond/M_ctr_q_1" BEL
+        "backButt_Cond/M_ctr_q_2" BEL "backButt_Cond/M_ctr_q_3" BEL
+        "backButt_Cond/M_ctr_q_4" BEL "backButt_Cond/M_ctr_q_5" BEL
+        "backButt_Cond/M_ctr_q_6" BEL "backButt_Cond/M_ctr_q_7" BEL
+        "backButt_Cond/M_ctr_q_8" BEL "backButt_Cond/M_ctr_q_9" BEL
+        "backButt_Cond/M_ctr_q_10" BEL "backButt_Cond/M_ctr_q_11" BEL
+        "backButt_Cond/M_ctr_q_12" BEL "backButt_Cond/M_ctr_q_13" BEL
+        "backButt_Cond/M_ctr_q_14" BEL "backButt_Cond/M_ctr_q_15" BEL
+        "backButt_Cond/M_ctr_q_16" BEL "backButt_Cond/M_ctr_q_17" BEL
+        "backButt_Cond/M_ctr_q_18" BEL "backButt_Cond/M_ctr_q_19" BEL
+        "backButt_Cond/sync/M_pipe_q_1" BEL
+        "backButt_Cond/sync/Mshreg_M_pipe_q_1" BEL "M_state_q_FSM_FFd20_3" BEL
+        "M_state_q_FSM_FFd21_1" BEL "M_state_q_FSM_FFd16_1" BEL
+        "M_state_q_FSM_FFd21_2" BEL "M_state_q_FSM_FFd21_3" BEL
+        "entedge/M_last_q" BEL "M_mOut_q_0" BEL "bedge/M_last_q" BEL
+        "M_state_q_FSM_FFd23_1" BEL "M_state_q_FSM_FFd18_1" BEL
+        "M_state_q_FSM_FFd18_2" BEL "M_state_q_FSM_FFd23_2" BEL
+        "gedge/M_last_q" BEL "M_state_q_FSM_FFd19_1" BEL
+        "M_state_q_FSM_FFd19_2" BEL "M_bOut_q_0" BEL "M_clock_q_0" BEL
+        "M_clock_q_1" BEL "M_clock_q_2" BEL "M_clock_q_3" BEL
+        "M_state_q_FSM_FFd25_1" BEL "M_clock_q_4" BEL "M_state_q_FSM_FFd25_2"
+        BEL "M_clock_q_5" BEL "M_clock_q_6" BEL "M_clock_q_7" BEL
+        "M_clock_q_8" BEL "M_clock_q_9" BEL "M_state_q_FSM_FFd26_1" BEL
+        "rButt_Cond/M_ctr_q_0" BEL "rButt_Cond/M_ctr_q_1" BEL
+        "rButt_Cond/M_ctr_q_2" BEL "rButt_Cond/M_ctr_q_3" BEL
+        "rButt_Cond/M_ctr_q_4" BEL "rButt_Cond/M_ctr_q_5" BEL
+        "rButt_Cond/M_ctr_q_6" BEL "rButt_Cond/M_ctr_q_7" BEL
+        "rButt_Cond/M_ctr_q_8" BEL "rButt_Cond/M_ctr_q_9" BEL
+        "rButt_Cond/M_ctr_q_10" BEL "rButt_Cond/M_ctr_q_11" BEL
+        "rButt_Cond/M_ctr_q_12" BEL "rButt_Cond/M_ctr_q_13" BEL
+        "rButt_Cond/M_ctr_q_14" BEL "rButt_Cond/M_ctr_q_15" BEL
+        "rButt_Cond/M_ctr_q_16" BEL "rButt_Cond/M_ctr_q_17" BEL
+        "rButt_Cond/M_ctr_q_18" BEL "rButt_Cond/M_ctr_q_19" BEL
+        "rButt_Cond/sync/M_pipe_q_1" BEL "rButt_Cond/sync/Mshreg_M_pipe_q_1"
+        BEL "M_uIn_q_0" BEL "M_uIn_q_1" BEL "M_uIn_q_2" BEL "M_rOut_q_0" BEL
+        "cButt_Cond/M_ctr_q_0" BEL "cButt_Cond/M_ctr_q_1" BEL
+        "cButt_Cond/M_ctr_q_2" BEL "cButt_Cond/M_ctr_q_3" BEL
+        "cButt_Cond/M_ctr_q_4" BEL "cButt_Cond/M_ctr_q_5" BEL
+        "cButt_Cond/M_ctr_q_6" BEL "cButt_Cond/M_ctr_q_7" BEL
+        "cButt_Cond/M_ctr_q_8" BEL "cButt_Cond/M_ctr_q_9" BEL
+        "cButt_Cond/M_ctr_q_10" BEL "cButt_Cond/M_ctr_q_11" BEL
+        "cButt_Cond/M_ctr_q_12" BEL "cButt_Cond/M_ctr_q_13" BEL
+        "cButt_Cond/M_ctr_q_14" BEL "cButt_Cond/M_ctr_q_15" BEL
+        "cButt_Cond/M_ctr_q_16" BEL "cButt_Cond/M_ctr_q_17" BEL
+        "cButt_Cond/M_ctr_q_18" BEL "cButt_Cond/M_ctr_q_19" BEL
+        "cButt_Cond/sync/M_pipe_q_1" BEL "cButt_Cond/sync/Mshreg_M_pipe_q_1"
+        BEL "M_uB_q_0" BEL "M_gOut_q_0" BEL "M_uG_q_0" BEL
+        "M_state_q_FSM_FFd10" BEL "M_state_q_FSM_FFd11" BEL
+        "M_state_q_FSM_FFd12" BEL "M_state_q_FSM_FFd1" BEL
+        "M_state_q_FSM_FFd13" BEL "M_state_q_FSM_FFd2" BEL
+        "M_state_q_FSM_FFd14" BEL "M_state_q_FSM_FFd3" BEL
+        "M_state_q_FSM_FFd15" BEL "M_state_q_FSM_FFd20" BEL
+        "M_state_q_FSM_FFd4" BEL "M_state_q_FSM_FFd16" BEL
+        "M_state_q_FSM_FFd21" BEL "M_state_q_FSM_FFd5" BEL
+        "M_state_q_FSM_FFd22" BEL "M_state_q_FSM_FFd17" BEL
+        "M_state_q_FSM_FFd6" BEL "M_state_q_FSM_FFd23" BEL
+        "M_state_q_FSM_FFd18" BEL "M_state_q_FSM_FFd7" BEL
+        "M_state_q_FSM_FFd24" BEL "M_state_q_FSM_FFd19" BEL
+        "M_state_q_FSM_FFd8" BEL "M_state_q_FSM_FFd30" BEL
+        "M_state_q_FSM_FFd25" BEL "M_state_q_FSM_FFd9" BEL
+        "M_state_q_FSM_FFd26" BEL "M_state_q_FSM_FFd27" BEL
+        "M_state_q_FSM_FFd28" BEL "M_state_q_FSM_FFd29" BEL
+        "backedge/M_last_q";
+TS_clk = PERIOD TIMEGRP "clk" 50 MHz HIGH 50%;
+SCHEMATIC END;
+

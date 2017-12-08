@@ -1,0 +1,29 @@
+module comparable (
+    input alufn[6],
+//    input z, //z,v,n taken from the AdderOrSubtractor mod
+//    input v,
+//    input n,    
+    input a[8],
+    input b[8],
+    output cmp_final[8]
+  ) {
+  
+  //sig cmp //is this always required? can we just put cmp_final[0] in the cases so we do not need to put a sig component?
+  //no, we can just cmp_final, another choice is to use sig cmp then assign it to the output
+  always {
+  cmp_final[7:1] = 7b0;
+    case(alufn[2:1]){
+      b01: // A = B
+          cmp_final[0] = a == b;
+      b10: // A < B
+          cmp_final[0] = a < b;
+      b11: // A <= B
+          cmp_final[0] = a <= b;
+      default:
+        //cmp_final[7:1] = 7b0;
+          cmp_final[0] = 1b0; 
+        }
+
+      }
+  }
+

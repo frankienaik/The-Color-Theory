@@ -1,0 +1,625 @@
+module mojo_top (
+    input clk,              // 50MHz clock
+    input rst_n,            // reset button (active low)
+    output led[8],         // 8 user controllable LEDs
+    //input cclk,             // configuration clock, AVR ready when high
+    output spi_miso,        // AVR SPI MISO
+    //input spi_ss,           // AVR SPI Slave Select
+    //input spi_mosi,         // AVR SPI MOSI
+    //input spi_sck,          // AVR SPI Clock
+    output spi_channel [4], // AVR general purpose pins (used by default to select ADC channel)
+    //input avr_tx,           // AVR TX (FPGA RX)
+    output avr_rx,          // AVR RX (FPGA TX)
+    //input avr_rx_busy,      // AVR RX buffer full
+    output io_led [3][8],   // LEDs on IO Shield
+    //output io_seg [8],      // 7-segment LEDs on IO Shield
+    //output io_sel [4],      // Digit select on IO Shield
+    input io_button [5],    // 5 buttons on IO Shield
+    input io_dip [3][8],     // DIP switches on IO Shield
+    
+    input rButt, 
+    input gButt, 
+    input bButt, 
+    input cButt,
+    input backButt,
+    input clearButt, 
+    input entButt,
+    input fsButt, 
+    input gmButt, 
+    
+    output rinLED[1], 
+    output ginLED[1], 
+    output binLED[1], 
+    output cinLED[1],
+    
+    output routLED[1], 
+    output goutLED[1], 
+    output boutLED[1],
+    output youtLED[1], 
+    output moutLED[1], 
+    output coutLED[1],
+    
+    output cIndicator[1],
+    output idleLED[1],
+    
+    output timeLED[5],
+    output livesLED[3],
+    
+    output led_seg_goal [8],
+    output led_sel_goal [4]
+    
+  )
+  {
+  
+  
+  
+  sig rst;                  // reset signal
+  
+  .clk(clk) {
+    // The reset conditioner is used to synchronize the reset signal to the FPGA
+    // clock. This ensures the entire FPGA comes out of reset at the same time.
+    reset_conditioner reset_cond;
+    button_conditioner cButt_Cond;
+    button_conditioner rButt_Cond;
+    button_conditioner gButt_Cond;
+    button_conditioner bButt_Cond;
+    button_conditioner backButt_Cond;
+    button_conditioner entButt_Cond;
+    edge_detector cedge(#RISE(1),#FALL(0));
+    edge_detector redge(#RISE(1),#FALL(0));
+    edge_detector gedge(#RISE(1),#FALL(0));
+    edge_detector bedge(#RISE(1),#FALL(0));
+    edge_detector backedge(#RISE(0),#FALL(1));
+    edge_detector entedge(#RISE(1),#FALL(0));
+    
+    .rst(rst){
+      dff uC[1];
+      dff uR[1], uG[1], uB[1];
+      dff uIn[3];
+      dff gIn[3];
+      dff rOut[1],gOut[1],bOut[1],yOut[1],mOut[1],cOut[1],cInOut[1];
+      dff idleOut[1];
+      dff timer[5];
+      dff startTimer[5];
+      dff timerScore[8];
+      //dff curScore[8];
+      dff score[8];
+      dff lives[3];
+      dff clock[30];
+      dff state_id[4];
+      
+      multi_seven_seg seg;
+      fsm state(#INIT(CHOOSE_MODE)) = {CHOOSE_MODE, RESET, USER_TRANSLATE_FREE, UI_F, UI_G, UI_G_START, DIS_F, USER_TRANSLATE, COMP_MUL,
+        COMP_MUL2, COMP_ADD, D_LIFE, CHECK_LIFE, COMP_CHECK, Q_CHECK, COMP_STATE_R, COMP_STATE_G, COMP_STATE_B,
+        COMP_STATE_Y, COMP_STATE_M, COMP_STATE_C, COMP_STATE_0R, COMP_STATE_0G, COMP_STATE_0B,
+        COMP_STATE_0Y, COMP_STATE_0M, COMP_STATE_0C, DISP_CORRECT1, DISP_CORRECT2, CHECK_LVL,
+        DIS_WAIT, WAIT, WAIT_MISTAKE, END, END_2};
+ 
+    }
+  }
+  
+  sig alufn[6]; //6bit oppcode input
+  sig a[8]; //8 bit A input
+  sig b[8]; //8 bit B input
+  sig alu[8]; // 8 bit ALU output
+  //const X = 28; //constant that controls how long till the transitioning of the next state
+  
+  alu_8 aluI; //calling the alu module
+  decimal3 dec3; //calling the dec3 module
+  
+  //calling the sevenseg module
+
+  
+  
+  always {
+    
+    dec3.a = score.q;        
+    
+    // Initialize Signals
+    a = io_dip[0]; //right dip switch controls input a
+    b = io_dip[1]; //middle dip switch controls input b
+    alufn = io_dip[2]; //left dip switch controls input of alufn, do not worry about the yellow underline as the most sig bits will be dropped
+    
+    cButt_Cond.in=cButt;cedge.in=cButt_Cond.out;
+    rButt_Cond.in=rButt;redge.in=rButt_Cond.out;
+    gButt_Cond.in=gButt;gedge.in=gButt_Cond.out;
+    bButt_Cond.in=bButt;bedge.in=bButt_Cond.out;
+    backButt_Cond.in=backButt;backedge.in=backButt_Cond.out;
+    entButt_Cond.in=entButt;entedge.in=entButt_Cond.out;
+    
+    reset_cond.in = ~rst_n; // input raw inverted reset signal
+    rst = reset_cond.out;   // conditioned reset
+    
+    spi_miso = bz;          // not using SPI
+    spi_channel = bzzzz;    // not using flags
+    avr_rx = bz;            // not using serial port
+    
+    io_led = 3x{{8h00}};    // turn LEDs off
+    //io_seg = 8hff;          // turn segments off
+    //io_sel = 4hf;           // select no digits
+    seg.values = {dec3.out0,dec3.out1,dec3.out2,4h0};
+    led_seg_goal = 8hff;
+    led_sel_goal = 4hf;
+    led_seg_goal = seg.seg;
+    led_sel_goal = ~seg.sel;
+    //Initialize outputs    
+    idleLED = idleOut.q;
+    led = 0;
+    //timeLED = 5h00;
+    timeLED = timer.q;
+    livesLED = lives.q;
+    routLED = rOut.q ;goutLED = gOut.q;boutLED = bOut.q;
+    youtLED = yOut.q ;moutLED = mOut.q;coutLED = cOut.q;
+    cIndicator = cInOut.q;   // comp question Indicator
+    rinLED=uR.q;ginLED=uG.q;binLED=uB.q;cinLED=uC.q; // Linking input leds to input dffs    
+        
+    //assigning inputs and outputs of aluI
+    aluI.a = a;
+    aluI.b = b;
+    aluI.alufn = alufn;
+    alu = aluI.alu;
+    
+
+    // STATEMACHINE TEST CASES
+    case(state.q){
+                      
+      state.CHOOSE_MODE: // Choose mode state, initial state
+        
+        clock.d=clock.q+1;
+        if(clock.q==26d8333333){rOut.d=rOut.q+1;} 
+        if(clock.q==26d16666666){gOut.d=gOut.q+1;}
+        if(clock.q==26d24999999){bOut.d=bOut.q+1;}
+        if(clock.q==26d33333333){yOut.d=yOut.q+1;}
+        if(clock.q==26d41666666){mOut.d=mOut.q+1;}
+        if(clock.q==26d49999999){cOut.d=cOut.q+1;clock.d=0;}
+        
+        if(fsButt==1) {
+          rOut.d=0;gOut.d=0;bOut.d=0;yOut.d=0;mOut.d=0;cOut.d=0;
+          state.d = state.UI_F;}
+        if(gmButt==1) {
+          rOut.d=0;gOut.d=0;bOut.d=0;yOut.d=0;mOut.d=0;cOut.d=0;          
+          state.d = state.UI_G_START;}
+        
+      
+      state.UI_F: // IDLE state waiting for user input
+        if(redge.out) {uR.d=uR.q+1;} // if button is pressed, increment the user dff
+        if(gedge.out) {uG.d=uG.q+1;}
+        if(bedge.out) {uB.d=uB.q+1;}
+        if(cedge.out) {uC.d=uC.q+1;}
+        
+        if(clearButt==1) {
+          uR.d=0;uG.d=0;uB.d=0;uC.d=0;}  // reset inputs
+        if(entedge.out) {
+          state.d = state.DIS_F;}
+        if(backedge.out) {
+          uR.d=0;uG.d=0;uB.d=0;uC.d=0;
+          state.d = state.CHOOSE_MODE;}
+          
+      state.DIS_F: // state for displaying user input in freestyle mode
+        if (uC.q==0 && uR.q==1 && uG.q==0 && uB.q==0) { // RED
+          rOut.d=rOut.q+1;}
+        if (uC.q==0 && uR.q==0 && uG.q==1 && uB.q==0) { // GREEN
+          gOut.d=gOut.q+1;}
+        if (uC.q==0 && uR.q==0 && uG.q==0 && uB.q==1) { // BLUE
+          bOut.d=bOut.q+1;}
+        if (uC.q==0 && uR.q==1 && uG.q==1 && uB.q==0) { // YELLOW
+          yOut.d=yOut.q+1;}
+        if (uC.q==0 && uR.q==1 && uG.q==0 && uB.q==1) { // MAGENTA
+          mOut.d=mOut.q+1;}
+        if (uC.q==0 && uR.q==0 && uG.q==1 && uB.q==1) { // CYAN
+          cOut.d=cOut.q+1;}
+          
+        if (uC.q==1 && uR.q==1 && uG.q==0 && uB.q==0) { // COMP of RED = Cyan
+          cOut.d=cOut.q+1;}
+        if (uC.q==1 && uR.q==0 && uG.q==1 && uB.q==0) { // COMP of GREEN = Magenta
+          mOut.d=mOut.q+1;}
+        if (uC.q==1 && uR.q==0 && uG.q==0 && uB.q==1) { // COMP of BLUE = Yellow
+          yOut.d=yOut.q+1;}
+        if (uC.q==1 && uR.q==1 && uG.q==1 && uB.q==0) { // COMP of YELLOW = Blue
+          bOut.d=bOut.q+1;}
+        if (uC.q==1 && uR.q==1 && uG.q==0 && uB.q==1) { // COMP of MAGENTA = Green
+          gOut.d=gOut.q+1;}
+        if (uC.q==1 && uR.q==0 && uG.q==1 && uB.q==1) { // COMP of CYAN = Red
+          rOut.d=rOut.q+1;}
+        state.d = state.DIS_WAIT;      
+        
+      state.DIS_WAIT:  
+        if(backedge.out) {
+          state_id.d=0; 
+          rOut.d=0;gOut.d=0;bOut.d=0;yOut.d=0;mOut.d=0;cOut.d=0;// reset output leds
+          uR.d=0;uG.d=0;uB.d=0;uC.d=0; // reset user inputs except complementary
+          state.d=state.UI_F;}
+        
+      state.UI_G_START: // Countdown timer before game mode starts        
+        clock.d=clock.q+1;
+        if(clock.q==26d24999999){gOut.d=gOut.q+1;bOut.d=bOut.q+1;yOut.d=yOut.q+1;mOut.d=mOut.q+1;cOut.d=cOut.q+1;}
+        if(clock.q==26d49999999){
+          gOut.d=0;bOut.d=0;yOut.d=0;mOut.d=0;cOut.d=0;
+          clock.d=0;
+          startTimer.d=startTimer.q+1;
+          aluI.alufn = 6b110011;
+          aluI.a = startTimer.q;
+          aluI.b = 4b0011;
+          alu = aluI.alu;}
+        if(alu==8b1) {    
+          rOut.d=rOut.q+1;
+          uR.d=0;uG.d=0;uB.d=0;  // reset inputs
+          state_id.d=state_id.q+1; // move state_id into first question
+          lives.d = lives.q+7;  // reset lifes
+          //timer.d = timer.q+5;  // reset led timer
+          timer.d = timer.q+31;
+          timerScore.d = timerScore.q+5; // reset timerscore
+          startTimer.d=0;
+          score.d=0;
+          state.d = state.UI_G;}
+
+      state.UI_G: // game mode start stateuser input versus generated input
+        led = 8b00100000;
+        if (redge.out) {uR.d=uR.q+1;}
+        if (gedge.out) {uG.d=uG.q+1;}
+        if (bedge.out) {uB.d=uB.q+1;}
+                
+        // timer for question
+        clock.d=clock.q+1;
+        if(clock.q==26d49999999){
+          clock.d=0;
+          timerScore.d=timerScore.q-1;
+          //timer.d=timer.q-1;
+          
+          aluI.alufn = 6b100000; //  <<
+          aluI.a = timer.q;
+          aluI.b = 5b1;
+          alu = aluI.alu;
+          timer.d=alu;}
+        if(timer.q==5b0) {          
+          uIn.d=0;
+          state.d = state.USER_TRANSLATE;}
+        
+        if(clearButt==1) {
+          uR.d=0;uG.d=0;uB.d=0;}  // reset inputs
+        if(entedge.out) {      
+          timer.d=0;
+          uIn.d = 0;
+          state.d = state.USER_TRANSLATE;}
+        if(backedge.out) {
+          state_id.d=0;
+          state.d = state.RESET;}
+      
+      state.USER_TRANSLATE:
+        led = 8b00010000;
+        if (uR.q==0 && uG.q==0 && uB.q==0) { // NO ANSWER
+          uIn.d=0;}
+        if (uR.q==1 && uG.q==0 && uB.q==0) { // RED
+          uIn.d=uIn.q+4;}
+        if (uR.q==0 && uG.q==1 && uB.q==0) { // GREEN
+          uIn.d=uIn.q+2;}
+        if (uR.q==0 && uG.q==0 && uB.q==1) { // BLUE
+          uIn.d=uIn.q+1;}
+        if (uR.q==1 && uG.q==1 && uB.q==0) { // YELLOW
+          uIn.d=uIn.q+6;}
+        if (uR.q==1 && uG.q==0 && uB.q==1) { // MAGENTA
+          uIn.d=uIn.q+5;}
+        if (uR.q==0 && uG.q==1 && uB.q==1) { // CYAN
+          uIn.d=uIn.q+3;}
+        gIn.d=0;        
+        state.d=state.COMP_STATE_R; // GO TO COMP_STATE CHECKER
+      
+      
+      state.COMP_CHECK: // State to check if user input is same as question input
+        led = 8b00000100;
+        clock.d=clock.q+1;
+        if(clock.q==26d49999999){
+          clock.d=0;        
+          aluI.alufn = 6b110011;
+          aluI.a = uIn.q;
+          aluI.b = gIn.q;
+          alu = aluI.alu;
+          if (alu == 8b1) { // if correct answer, go to add score
+            uR.d=0;uG.d=0;uB.d=0;  // reset inputs
+            //curScore.d=0;
+            state.d=state.CHECK_LVL;
+          } else {            
+            uR.d=0;uG.d=0;uB.d=0;  // reset inputs
+            //curScore.d=0;
+            state.d = state.D_LIFE;
+          }
+        }
+
+      state.CHECK_LVL: // to check if in level 1 or 2
+        aluI.alufn = 6b110111;
+        aluI.a = state_id.q;
+        aluI.b = 4b0110;
+        alu = aluI.alu;
+        if (alu==8b1) {
+          //curScore.d=0;
+          state.d=state.COMP_MUL;}
+        else {
+          state.d=state.COMP_MUL2;}
+      
+      // STATES TO ADD TO TOTAL SCORE
+      
+      state.COMP_MUL: // MULTIPLY 1 by TIME REMAINING
+        if (timerScore.q==0) {
+          timerScore.d=timerScore.q+1;}
+        // calculate how much to multiply to score of 1 for being correct
+        //curScore.d = 0;
+        aluI.alufn = 6b10;
+        aluI.a = 8b1; //
+        aluI.b = timerScore.q; //
+        alu = aluI.alu;
+        score.d=alu;
+        //curScore.d = curScore.q + alu;
+        // After calculating, go to Question checker
+        state_id.d = state_id.q+1; // change state_id to next question
+        state.d = state.WAIT;
+        
+      
+      state.COMP_MUL2: // MULTIPLY 2 by TIME REMAINING
+        if (timerScore.q==0) {
+          timerScore.d=timerScore.q+1;}
+        // calculate how much to multiply to score of 1 for being correct
+        aluI.alufn = 6b10;
+        aluI.a = 8b10; //
+        aluI.b = timerScore.q; //
+        alu = aluI.alu;
+        score.d = alu;
+        // After calculating, go to Question checker
+        state_id.d = state_id.q+1; // change state_id to next question
+        state.d = state.WAIT;
+      
+      
+      state.WAIT: // State to delay circuit
+        clock.d=clock.q+1;
+        if(clock.q==26d49999999){
+          clock.d=0;
+          startTimer.d=startTimer.q+1;
+          aluI.alufn = 6b110011;
+          aluI.a = startTimer.q;
+          aluI.b = 4b0001;
+          alu = aluI.alu;}
+        if(alu==8b1) {    
+          startTimer.d=0;
+          state.d = state.Q_CHECK;}
+      
+      state.D_LIFE: // to minus life
+        led = 8b11111111;
+        aluI.alufn = 6b100000;
+        aluI.a = lives.q;
+        aluI.b = 3b1;
+        alu = aluI.alu;
+        lives.d = alu;        
+        state.d = state.CHECK_LIFE;
+      
+      state.CHECK_LIFE:
+      led=8b11111110;
+        aluI.alufn = 6b110011;
+        aluI.a = lives.q;
+        aluI.b = 3b0;
+        alu = aluI.alu;
+        if (alu == 8b1) { // to be replaced with ALU COMPARATOR
+          state.d = state.RESET; }
+        else{
+          state_id.d = state_id.q+1;
+          state.d = state.WAIT;}
+        
+      // STATE CHECKER
+      state.Q_CHECK:
+        led = 8b00000010;
+        timerScore.d = 0;
+        timerScore.d = timerScore.q+5;
+        timer.d=0;timer.d = timer.q+31;
+        case(state_id.q) {
+          2: rOut.d=0;gOut.d=gOut.q+1;state.d=state.UI_G; // go to green q
+          3: gOut.d=0;bOut.d=bOut.q+1;state.d=state.UI_G; // go to blue q
+          4: bOut.d=0;yOut.d=yOut.q+1;state.d=state.UI_G; // go to yellow q
+          5: yOut.d=0;mOut.d=mOut.q+1;state.d=state.UI_G; // go to magenta q
+          6: mOut.d=0;cOut.d=cOut.q+1;state.d=state.UI_G; // go to cyan q
+          // COMPLEMENTARY
+          7: cOut.d=0;rOut.d=rOut.q+1;cInOut.d=cInOut.q+1;state.d=state.UI_G; // go to comp of red q 0R 
+          8: rOut.d=0;gOut.d=gOut.q+1;state.d=state.UI_G; // go to comp of green q 0G
+          9: gOut.d=0;bOut.d=bOut.q+1;state.d=state.UI_G; // go to comp of blue q 0B
+          10: bOut.d=0;yOut.d=yOut.q+1;state.d=state.UI_G; // go to comp of yellow q 0Y
+          11: yOut.d=0;mOut.d=mOut.q+1;state.d=state.UI_G; // go to comp of magenta q 0M
+          12: mOut.d=0;cOut.d=cOut.q+1;state.d=state.UI_G; // go to comp of cyan q 0C
+          13: rOut.d=1;gOut.d=1;bOut.d=1;yOut.d=1;mOut.d=1;cOut.d=1;cInOut.d=1;state.d=state.END;
+            }
+ 
+
+
+      
+      // STATES TO DECIDE WHICH QUESTION COMPARATOR TO GO TO
+      // EACH STATE == TO BE REPLACED WITH COMPARATOR
+      
+      state.COMP_STATE_R:
+      led = 8b00001000;
+        aluI.alufn = 6b110011;
+        aluI.a = state_id.q;
+        aluI.b = 4b0001;
+        alu = aluI.alu;
+        if (alu==8b1) {
+          gIn.d=gIn.q+4;
+          state.d = state.COMP_CHECK;}
+        else{
+          state.d = state.COMP_STATE_G;
+        }
+
+      state.COMP_STATE_G:
+        led = 8b00000001;
+        aluI.alufn = 6b110011;
+        aluI.a = state_id.q;
+        aluI.b = 4b0010;
+        alu = aluI.alu;
+        if (alu==8b1) {
+          gIn.d=gIn.q+2;
+          state.d = state.COMP_CHECK;}
+        else{
+          state.d = state.COMP_STATE_B;
+        }
+        
+      state.COMP_STATE_B:
+        aluI.alufn = 6b110011;
+        aluI.a = state_id.q;
+        aluI.b = 4b0011;
+        alu = aluI.alu;
+        if (alu==8b1) {
+          gIn.d=gIn.q+1;
+          state.d = state.COMP_CHECK;}
+        else{
+          state.d = state.COMP_STATE_Y;
+        }
+      state.COMP_STATE_Y:
+        aluI.alufn = 6b110011;
+        aluI.a = state_id.q;
+        aluI.b = 4b0100;
+        alu = aluI.alu;
+        if (alu==8b1) {
+          gIn.d=gIn.q+6;
+          state.d = state.COMP_CHECK;}
+        else{
+          state.d = state.COMP_STATE_M;
+        }
+      state.COMP_STATE_M:
+        aluI.alufn = 6b110011;
+        aluI.a = state_id.q;
+        aluI.b = 4b0101;
+        alu = aluI.alu;
+        if (alu==8b1) {
+          gIn.d=gIn.q+5;
+          state.d = state.COMP_CHECK;}
+        else{
+          state.d = state.COMP_STATE_C;
+        }
+      state.COMP_STATE_C:
+        aluI.alufn = 6b110011;
+        aluI.a = state_id.q;
+        aluI.b = 4b0110;
+        alu = aluI.alu;
+        if (alu==8b1) {
+          gIn.d=gIn.q+3;
+          state.d = state.COMP_CHECK;}
+        else{
+          state.d = state.COMP_STATE_0R;
+        }
+      state.COMP_STATE_0R:
+        aluI.alufn = 6b110011;
+        aluI.a = state_id.q;
+        aluI.b = 4b0111;
+        alu = aluI.alu;
+        if (alu==8b1) {
+          gIn.d=gIn.q+3;
+          state.d = state.COMP_CHECK;}
+        else{
+          state.d = state.COMP_STATE_0G;
+        }
+      state.COMP_STATE_0G:
+        aluI.alufn = 6b110011;
+        aluI.a = state_id.q;
+        aluI.b = 4b1000;
+        alu = aluI.alu;
+        if (alu==8b1) {
+          gIn.d=gIn.q+5;
+          state.d = state.COMP_CHECK;}
+        else{
+          state.d = state.COMP_STATE_0B;
+        }
+      state.COMP_STATE_0B:
+        aluI.alufn = 6b110011;
+        aluI.a = state_id.q;
+        aluI.b = 4b1001;
+        alu = aluI.alu;
+        if (alu==8b1) {
+          gIn.d=gIn.q+6;
+          state.d = state.COMP_CHECK;}
+        else{
+          state.d = state.COMP_STATE_0Y;
+        }
+      state.COMP_STATE_0Y:
+        aluI.alufn = 6b110011;
+        aluI.a = state_id.q;
+        aluI.b = 4b1010;
+        alu = aluI.alu;
+        if (alu==8b1) {
+          gIn.d=gIn.q+1;
+          state.d = state.COMP_CHECK;}
+        else{
+          state.d = state.COMP_STATE_0M;
+        }
+      state.COMP_STATE_0M:
+        aluI.alufn = 6b110011;
+        aluI.a = state_id.q;
+        aluI.b = 4b1011;
+        alu = aluI.alu;
+        if (alu==8b1) {
+          gIn.d=gIn.q+2;
+          state.d = state.COMP_CHECK;}
+        else{
+          state.d = state.COMP_STATE_0C;
+        }
+      state.COMP_STATE_0C:
+        aluI.alufn = 6b110011;
+        aluI.a = state_id.q;
+        aluI.b = 4b1100;
+        alu = aluI.alu;
+        if (alu==8b1) {
+          gIn.d=gIn.q+4;
+          state.d = state.COMP_CHECK;}
+        else{
+          state.d = state.END;
+        }
+        
+      state.RESET: // to skip straight to end from lives ending or user end
+        rOut.d=0;gOut.d=0;bOut.d=0;yOut.d=0;mOut.d=0;cOut.d=0;cInOut.d=0;
+        uR.d=0;uG.d=0;uB.d=0;uC.d=0;
+        state_id.d=0;
+        state.d = state.END;                
+        
+      state.END:
+      led = 8b01010101;        
+        clock.d=clock.q+1;
+        if(clock.q==26d49999999){ 
+          rOut.d=rOut.q+1;gOut.d=gOut.q+1;bOut.d=bOut.q+1;yOut.d=yOut.q+1;mOut.d=mOut.q+1;cOut.d=cOut.q+1;       
+          idleOut.d = idleOut.q+1;
+          state.d = state.END_2;}
+          
+        if(entedge.out || backedge.out) {
+          clock.d=0;
+          rOut.d=0;gOut.d=0;bOut.d=0;yOut.d=0;mOut.d=0;cOut.d=0;cInOut.d=0; // reset output leds
+          uR.d=0;uG.d=0;uB.d=0;uC.d=0;  // reset inputs
+          state_id.d=0; // move state_id into 0
+          lives.d = 0;  // reset lifes
+          timer.d = 0;  // reset led timer   
+          score.d=0; timerScore.d=0;       
+          state.d = state.CHOOSE_MODE;}
+          
+      state.END_2:
+      led = 8b10101010;        
+        clock.d=clock.q+1;
+        if(clock.q==26d49999999){ 
+          rOut.d=0;gOut.d=0;bOut.d=0;yOut.d=0;mOut.d=0;cOut.d=0;cInOut.d=0;       
+          idleOut.d = idleOut.q+1;
+          state.d = state.END;}
+         
+        if(entedge.out || backedge.out) {
+          clock.d=0;
+          rOut.d=0;gOut.d=0;bOut.d=0;yOut.d=0;mOut.d=0;cOut.d=0;cInOut.d=0; // reset output leds
+          uR.d=0;uG.d=0;uB.d=0;uC.d=0;  // reset inputs
+          state_id.d=0; // move state_id into 0
+          lives.d = 0;  // reset lifes
+          timer.d = 0;  // reset led timer   
+          score.d=0; timerScore.d=0;       
+          state.d = state.CHOOSE_MODE;}
+      
+    }
+    /*
+    case(timer.q){
+      0: timeLED=5b00000;
+      1: timeLED=5b00001;
+      2: timeLED=5b00011;
+      3: timeLED=5b00111;
+      4: timeLED=5b01111;
+      5: timeLED=5b11111;
+      default:timeLED = 5b00000;
+    }
+    */
+  }
+}

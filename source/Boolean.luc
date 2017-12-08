@@ -1,0 +1,26 @@
+module boolean (
+    input alufn[6],
+    input a[8],
+    input b[8],
+    output boole[8]
+  ) {
+  var i; //this is to loop through the 8 bits in the for loop below
+  var x; //this are for the cases
+  always {
+    for (i=0;i<8;i++){
+      x = b[i] * 2 + a[i];
+     case(x){
+      b00:
+        boole[i] = alufn[0];
+      b01:
+        boole[i] = alufn[1];
+      b10:
+        boole[i] = alufn[2];
+      b11:
+        boole[i] = alufn[3];
+      default:
+        boole[i] = alufn[0];
+      }
+    }
+  }
+}

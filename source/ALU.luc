@@ -1,0 +1,60 @@
+module alu_8 ( // this is to join all the different modules together and to choose which modules to take action
+    input a[8],
+    input b[8],
+    input alufn[6],
+    output alu[8],
+    output v,
+    output n,
+    output z,
+    output overflow
+  ) {
+//modules of ALU
+  shifter shift;
+  comparable cmpr;
+  boolean bool;
+  adderOrSubtractor adder;
+//asigning inputs of ALU to module
+  always {
+    adder.a = a;
+    adder.b = b;
+    adder.alufn = alufn;
+  
+    bool.a = a;
+    bool.b = b;
+    bool.alufn = alufn;
+  
+    cmpr.alufn = alufn;
+    cmpr.a = a;
+    cmpr.b = b;
+    //cmpr.z = adder.z;
+  
+    shift.a = a;
+    shift.b = b;
+    shift.alufn = alufn;
+  
+  //choosing which outputs to be taken
+   case(alufn[5:4]){
+      b00: //output of adder
+          alu = adder.final_sum;
+      b01: //output of boolean
+          alu = bool.boole;
+      b10: //output of shifter
+          alu = shift.out;
+      b11: //output of Comparable
+          alu = cmpr.cmp_final;
+      default:
+          alu = 8b0;
+      }
+    
+    //assigning the outputs.
+    
+    v = adder.v;
+    n = adder.n;
+    z = adder.z;
+    
+    overflow = adder.v;
+    
+    
+    
+  }
+}

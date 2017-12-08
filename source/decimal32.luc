@@ -1,0 +1,42 @@
+module decimal32 (
+    input a[8],
+    output out0[4], // to output 8bit to 3decimal.
+    output out1[4],
+    output out2[4]
+  ) {
+  
+  var i;
+  sig ones[4];
+  sig hundreds[4];
+  sig tens[4];
+  sig shift[8];
+
+  always {
+    ones =b0;
+    tens =b0;
+    hundreds =b0;
+    shift = a;
+    
+    //if number >= 5, add 3
+    for (i=0; i<8;i++){
+      if (ones >=5) ones = ones + 3;
+      if (tens >=5) tens = tens + 3;
+      if (hundreds >= 5) hundreds = hundreds + 3;
+      
+      // copy the bit from the column on right after a left shift by 1 bit
+      hundreds = hundreds << 1;
+      hundreds[0] = tens[3];
+      tens = tens << 1;
+      tens[0] = ones[3];
+      ones = ones << 1;
+      ones[0] = shift[7];
+      shift = shift << 1;
+      
+      // Algorithim ends after shifting bits 8 times.
+    }
+    out2 = hundreds;
+    out1 = tens;
+    out0 = ones;
+    
+  }
+}

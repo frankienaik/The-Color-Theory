@@ -1,0 +1,43 @@
+module adderOrSubtractor (
+    input a[8], // a and b are 8 bits as it is 8 bit ALU
+    input b[8],
+    input alufn[6], //oppcodes are 6 bits
+    
+    output final_sum[8], //it is [8] as the output should be add regardless of overflow
+    output z, // z = 1 when final_sum is all 0
+    output v, // v represents overflow
+    output n, // n is true when final_sum is negative thus the MSB of final_sum is negative
+    output overflow //this shows an overflow
+  ) {
+  sig sum[9]; //result of the actions
+  //sig s_sum[9]; //used to calculate z,v,n
+  // they are 9 bits just in case of an overflow
+    
+//sig o; // overflow constant
+  always {
+    case(alufn[1:0]){ //alufn controlling add or subtract with addition functions such as multiplication and modulo
+      b00: //addition
+        //s_sum = a-b;
+        sum = a+b;
+      b01: //subtraction
+        //s_sum = a-b;
+        sum = a-b;
+      b10: //multiplication
+        //s_sum = a-b;
+        sum = a*b;
+      b11: //modulo
+        //s_sum = a-b;
+        sum = a - a/b*b;
+      default:
+        //s_sum = a-b;
+        sum = a+b;
+    }
+   // assignment to the outputs.
+    final_sum = sum[7:0];
+    z = ~|sum[7:0];//NOR is when it is all 0, the output is 1
+
+    v = ( a[7] & b[7] & (~sum[7]) )|( (~a[7]) & (~b[7]) & sum[7]);
+    overflow = ( a[7] & b[7] & (~sum[7]) )|( (~a[7]) & (~b[7]) & sum[7]); // eqn given in lab3
+    n = sum[7];
+  }
+}

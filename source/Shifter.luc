@@ -1,0 +1,23 @@
+module shifter (
+    input a[8],
+    input b[8],
+    input alufn[6],
+    output out[8]
+  ) {
+// Since this is an 8 bit shift. We require the cascading of 4bit,2bit,1bit. Thus this is a total of 3
+// b[2:0] should be used in determining the number of shifts.
+// there are 3 kinds of shift, we need to determine which shift is chosen depending on alufn[1:0]
+  always {
+  case(alufn[1:0]){
+      b00: //SHL
+          out = a << b[2:0];
+      b01: //SHR
+          out = a >> b[2:0];
+      b11: //SRA
+          out = ($signed(a)) >>> (b[2:0]);
+      default:
+          out = a;
+      }
+
+  }
+}
