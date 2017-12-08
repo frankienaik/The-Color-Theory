@@ -182,11 +182,54 @@ module mojo_top (
         
       
       state.UI_F: // IDLE state waiting for user input
-        if(redge.out) {uR.d=uR.q+1;} // if button is pressed, increment the user dff
-        if(gedge.out) {uG.d=uG.q+1;}
-        if(bedge.out) {uB.d=uB.q+1;}
-        if(cedge.out) {uC.d=uC.q+1;}
+
+    // STATEMACHINE TEST CASES
+    case(state.q){
+                      
+      state.CHOOSE_MODE: // Choose mode state, initial state
         
+        clock.d=clock.q+1;
+        if(clock.q==26d8333333){rOut.d=rOut.q+1;} 
+        if(clock.q==26d16666666){gOut.d=gOut.q+1;}
+        if(clock.q==26d24999999){bOut.d=bOut.q+1;}
+        if(clock.q==26d33333333){yOut.d=yOut.q+1;}
+        if(clock.q==26d41666666){mOut.d=mOut.q+1;}
+        if(clock.q==26d49999999){cOut.d=cOut.q+1;clock.d=0;}
+        
+        if(fsButt==1) {
+          rOut.d=0;gOut.d=0;bOut.d=0;yOut.d=0;mOut.d=0;cOut.d=0;
+          state.d = state.UI_F;}
+        if(gmButt==1) {
+          rOut.d=0;gOut.d=0;bOut.d=0;yOut.d=0;mOut.d=0;cOut.d=0;          
+          state.d = state.UI_G_START;}
+        
+      
+      state.UI_F: // IDLE state waiting for user input
+        if(redge.out) {
+          aluI.alufn = 6b0;
+          aluI.a = uR.q;
+          aluI.b = 1;
+          alu = aluI.alu;
+          uR.d=alu;} 
+        if(gedge.out) {
+          aluI.alufn = 6b0;
+          aluI.a = uG.q;
+          aluI.b = 1;
+          alu = aluI.alu;
+          uG.d=alu;}
+        if(bedge.out) {
+          aluI.alufn = 6b0;
+          aluI.a = ub.q;
+          aluI.b = 1;
+          alu = aluI.alu;
+          ub.d=alu;}
+        if(cedge.out) {
+          aluI.alufn = 6b0;
+          aluI.a = uC.q;
+          aluI.b = 1;
+          alu = aluI.alu;
+          uC.d=alu;}        
+
         if(clearButt==1) {
           uR.d=0;uG.d=0;uB.d=0;uC.d=0;}  // reset inputs
         if(entedge.out) {
@@ -591,7 +634,13 @@ module mojo_top (
           score.d=0; timerScore.d=0;       
           state.d = state.CHOOSE_MODE;}
           
-      state.END_2:
+      state.END_2:ives.d = 0;  // reset lifes
+          timer.d = 0;  // reset led timer   
+          score.d=0; timerScore.d=0;       
+          state.d = state.CHOOSE_MODE;}
+      
+    }
+  }
       led = 8b10101010;        
         clock.d=clock.q+1;
         if(clock.q==26d49999999){ 
@@ -604,22 +653,5 @@ module mojo_top (
           rOut.d=0;gOut.d=0;bOut.d=0;yOut.d=0;mOut.d=0;cOut.d=0;cInOut.d=0; // reset output leds
           uR.d=0;uG.d=0;uB.d=0;uC.d=0;  // reset inputs
           state_id.d=0; // move state_id into 0
-          lives.d = 0;  // reset lifes
-          timer.d = 0;  // reset led timer   
-          score.d=0; timerScore.d=0;       
-          state.d = state.CHOOSE_MODE;}
-      
-    }
-    /*
-    case(timer.q){
-      0: timeLED=5b00000;
-      1: timeLED=5b00001;
-      2: timeLED=5b00011;
-      3: timeLED=5b00111;
-      4: timeLED=5b01111;
-      5: timeLED=5b11111;
-      default:timeLED = 5b00000;
-    }
-    */
-  }
+          l
 }
